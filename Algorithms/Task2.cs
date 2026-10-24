@@ -16,7 +16,7 @@ public static class Task2
         board[missing1.row, missing1.col] = 'X';
         board[missing2.row, missing2.col] = 'X';
 
-        var (possible, resultBoard) = FindSolution(board, (char)('1' - 1), n);
+        var (possible, resultBoard) = FindSolution(board, (char)('A' - 1), n);
         if (!possible || resultBoard == null)
         {
             return (false, new char[0, 0]);
@@ -49,7 +49,7 @@ public static class Task2
 
         int x = nextIndex / n;
         int y = nextIndex % n;
-        char nextValue = (char)(lastValue + 1);
+        char nextValue = lastValue == (char)('A' - 1) ? 'A' : (lastValue == 'Z' ? 'a' : (char)(lastValue + 1));
 
         char[,]? hBoard = Move(board, x, y, isHorizontal: true, nextValue, n);
         char[,]? vBoard = Move(board, x, y, isHorizontal: false, nextValue, n);
