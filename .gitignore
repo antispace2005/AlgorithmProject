@@ -1,0 +1,33 @@
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rms/
+[Aa]rm64/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio / Rider cache & user files
+.vs/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+## Test results
+TestResults/
+[Tt]est[Rr]esult*/
+coverage.opencover.xml
+*.coverage
+*.coveragexml
+
+## Skills
+skills/

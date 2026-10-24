@@ -1,6 +1,8 @@
-﻿namespace TestSuit;
+﻿using Algorithms;
 
-public class Tests
+namespace TestSuit;
+
+public class Task1Tests
 {
     [SetUp]
     public void Setup()
@@ -48,7 +50,7 @@ public class Tests
         int n = 0;
         char[] coins = [];
 
-        var (possible, flips) = Program.RemoveCoins(n, coins);
+        var (possible, flips) = Task1.RemoveCoins(n, coins);
 
         TestContext.Out.WriteLine("--- Test: Empty Coins ---");
         TestContext.Out.WriteLine($"Possible: {possible}");
@@ -64,7 +66,7 @@ public class Tests
         int n = 3;
         char[] coins = ['T', 'T', 'T'];
 
-        var (possible, flips) = Program.RemoveCoins(n, coins);
+        var (possible, flips) = Task1.RemoveCoins(n, coins);
 
         TestContext.Out.WriteLine("--- Test: All Tails (Unsolvable) ---");
         TestContext.Out.WriteLine($"Possible: {possible}");
@@ -80,7 +82,7 @@ public class Tests
         int n = 2;
         char[] coins = ['H', 'T'];
 
-        var (possible, flips) = Program.RemoveCoins(n, coins);
+        var (possible, flips) = Task1.RemoveCoins(n, coins);
 
         TestContext.Out.WriteLine("--- Test: Solvable (Algorithm Succeeds) ---");
         TestContext.Out.WriteLine($"Possible: {possible}");
@@ -99,7 +101,7 @@ public class Tests
         int n = 7;
         char[] coins = ['H', 'T', 'T', 'H', 'T', 'T', 'H'];
 
-        var (possible, flips) = Program.RemoveCoins(n, coins);
+        var (possible, flips) = Task1.RemoveCoins(n, coins);
 
         TestContext.Out.WriteLine("--- Test: Solvable (Greedy Fails) ---");
         TestContext.Out.WriteLine($"Possible: {possible}");
