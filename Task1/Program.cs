@@ -4,128 +4,70 @@ public partial class Program
 {
     public static (bool possible, int[] flips) RemoveCoins(int n, char[] coins)
     {
-        // Selection priority:
-        // 1. Maximizes net 'H' gains after neighbor flips.
-        // 2. Tie-breaker: Closest to an edge or empty slot ('\0').
-        // Up to n iterations; coins contain 'H', 'T', or '\0' (cleared).
-                
-        coins = coins.ToArray(); //copy
+        // Priority is which results the most heads up after the flip then which one is closest to an edge
+        // Maximum number of loops is n, assuming coins contains T, H and '\0' as empty slot
         
+        coins = coins.ToArray(); // copy
         int[] flips = new int[n];
+
         for (int mainLoop = 0; mainLoop < n; mainLoop++)
         {
-            var best = (Index: -1, Value: -3, edgeDistance: int.MaxValue);
-            int currentEdge = -1;
+            var best = (Index: -1, Value: -3, EdgeDistance: int.MaxValue);
 
-            // --- Forward Loop (Left to Right) ---
-            int tempValue,tempEdgeDistance;
-            for (int i = 0; i < n; i++)
+            // Reusable pass function for both forward (left-to-right) and backward (right-to-left)
+            void ScanPass(bool forward)
             {
-                switch (coins[i]) {
-                    case '\0':
-                        currentEdge = i;
-                        continue;
+                int currentEdge = forward ? -1 : n;
+                int start = forward ? 0 : n - 1;
+                int end = forward ? n : -1;
+                int step = forward ? 1 : -1;
 
-                    case 'T':
-                        continue;
+                for (int i = start; i != end; i += step)
+                {
+                    switch (coins[i])
+                    {
+                        case '\0':
+                            currentEdge = i;
+                            continue;
 
-                    case 'H':
-                        tempValue = 0;
-                        tempEdgeDistance = Math.Abs(currentEdge - i) - 1;
-                        if (i != 0)
-                        {
-                            switch (coins[i - 1])
+                        case 'T':
+                            continue;
+
+                        case 'H':
+                            int tempValue = 0;
+                            int tempEdgeDistance = Math.Abs(currentEdge - i) - 1;
+
+                            if (i != 0)
                             {
-                                case 'H':
-                                    tempValue--;
-                                    break;
-                                case 'T':
-                                    tempValue++;
-                                    break;
-                                default:
-                                    break;
+                                switch (coins[i - 1])
+                                {
+                                    case 'H': tempValue--; break;
+                                    case 'T': tempValue++; break;
+                                }
                             }
-                        }
-                        if (i < n - 1)
-                        {
-                            switch (coins[i + 1])
+                            if (i < n - 1)
                             {
-                                case 'H':
-                                    tempValue--;
-                                    break;
-                                case 'T':
-                                    tempValue++;
-                                    break;
-                                default:
-                                    break;
+                                switch (coins[i + 1])
+                                {
+                                    case 'H': tempValue--; break;
+                                    case 'T': tempValue++; break;
+                                }
                             }
-                        }
 
-                        if (tempValue > best.Value || (tempValue == best.Value && tempEdgeDistance < best.edgeDistance))
-                        {
-                            best = (i, tempValue, tempEdgeDistance);
-                        }
-                        break;
-
-                    default:
-                        break;
+                            if (tempValue > best.Value || (tempValue == best.Value && tempEdgeDistance < best.EdgeDistance))
+                            {
+                                best = (i, tempValue, tempEdgeDistance);
+                            }
+                            break;
+                    }
                 }
             }
 
-            // --- Backward Loop (Right to Left) ---
-            currentEdge = n;
-            for (int i = n - 1; i >= 0; i--)
-            {
-                switch (coins[i]) {
-                    case '\0':
-                        currentEdge = i;
-                        continue;
+            // --- Forward Pass (Left to Right) ---
+            ScanPass(forward: true);
 
-                    case 'T':
-                        continue;
-
-                    case 'H':
-                        tempValue = 0;
-                        tempEdgeDistance = Math.Abs(currentEdge - i) - 1;
-                        if (i != 0)
-                        {
-                            switch (coins[i - 1])
-                            {
-                                case 'H':
-                                    tempValue--;
-                                    break;
-                                case 'T':
-                                    tempValue++;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        if (i < n - 1)
-                        {
-                            switch (coins[i + 1])
-                            {
-                                case 'H':
-                                    tempValue--;
-                                    break;
-                                case 'T':
-                                    tempValue++;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        if (tempValue > best.Value || (tempValue == best.Value && tempEdgeDistance < best.edgeDistance))
-                        {
-                            best = (i, tempValue, tempEdgeDistance);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
+            // --- Backward Pass (Right to Left) ---
+            ScanPass(forward: false);
 
             // If no 'H' was found to remove, check if all coins were cleared
             if (best.Index == -1)
@@ -155,8 +97,8 @@ public partial class Program
 
             // Clear the removed coin
             coins[best.Index] = '\0';
-        }    
-        
+        }
+
         // Check if the board is completely cleared after n iterations
         if (coins.All(c => c == '\0'))
         {
