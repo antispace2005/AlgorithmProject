@@ -4,7 +4,7 @@ public static class Task2
 {
     private const char NUL = '\0';
 
-    public static (bool possible, (int row, int col)[] dominoes) TileDominoes(
+    public static (bool possible, char[,] board) TileDominoes(
         int n,
         (int row, int col) missing1,
         (int row, int col) missing2)
@@ -16,19 +16,71 @@ public static class Task2
         board[missing1.row, missing1.col] = 'X';
         board[missing2.row, missing2.col] = 'X';
 
-        int elementCount = n * n;
-        for (int i = 0; i < elementCount; i++)
+        var (possible, resultBoard) = FindSolution(board, (char)('1' - 1), n);
+        if (!possible || resultBoard == null)
         {
-            int x = i / n;
-            int y = i % n;
+            return (false, new char[0, 0]);
         }
 
-        return (false, []);
+        return (true, resultBoard);
     }
 
-    private static bool FindSolution(char[,] board, int lastPlacedIndex, int n)
+    private static (bool possible, char[,]? board) FindSolution(char[,] board, char lastValue, int n)
     {
-        return false;
+        // Find the next empty index in order
+        int nextIndex = -1;
+        int totalElements = n * n;
+        for (int i = 0; i < totalElements; i++)
+        {
+            int r = i / n;
+            int c = i % n;
+            if (board[r, c] == NUL)
+            {
+                nextIndex = i;
+                break;
+            }
+        }
+
+        // All slots filled successfully
+        if (nextIndex == -1)
+        {
+            return (true, board);
+        }
+
+        int x = nextIndex / n;
+        int y = nextIndex % n;
+        char nextValue = (char)(lastValue + 1);
+
+        char[,]? hBoard = Move(board, x, y, isHorizontal: true, nextValue, n);
+        char[,]? vBoard = Move(board, x, y, isHorizontal: false, nextValue, n);
+
+        // Both placements invalid
+        if (hBoard == null && vBoard == null)
+        {
+            return (false, null);
+        }
+
+        // Try horizontal placement first
+        if (hBoard != null)
+        {
+            var (possible, resultBoard) = FindSolution(hBoard, nextValue, n);
+            if (possible)
+            {
+                return (true, resultBoard);
+            }
+        }
+
+        // If horizontal placement fails, try vertical placement
+        if (vBoard != null)
+        {
+            var (possible, resultBoard) = FindSolution(vBoard, nextValue, n);
+            if (possible)
+            {
+                return (true, resultBoard);
+            }
+        }
+
+        return (false, null);
     }
 
     /// <summary>
@@ -65,7 +117,7 @@ public static class Task2
     }
 
     // Lowercase alias matching the specification
-    public static (bool possible, (int row, int col)[] dominoes) tileDominoes(
+    public static (bool possible, char[,] board) tileDominoes(
         int n,
         (int row, int col) missing1,
         (int row, int col) missing2)
